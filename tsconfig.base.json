@@ -15,7 +15,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@vivid-theory/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@vivid-theory/api-interfaces": [
+        "libs/api-interfaces/src/index.ts"
+      ],
+      "@vivid-theory/database": [
+        "libs/database/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

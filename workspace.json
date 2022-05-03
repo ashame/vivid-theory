@@ -3,6 +3,7 @@
   "projects": {
     "api": "apps/api",
     "api-interfaces": "libs/api-interfaces",
+    "database": "libs/database",
     "smarthomes-app": "apps/smarthomes-app",
     "smarthomes-app-e2e": "apps/smarthomes-app-e2e"
   }
