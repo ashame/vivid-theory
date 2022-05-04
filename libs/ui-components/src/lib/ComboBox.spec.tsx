@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 
 import ComboBox from './ComboBox';
 
-describe('UiComponents', () => {
+describe('ComboBox', () => {
     it('should render successfully', () => {
         const { baseElement } = render(
             <ComboBox

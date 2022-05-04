@@ -1,0 +1,39 @@
+import { Reading } from './api-interfaces';
+
+async function fetchJsonData<T>(url: string) {
+    return new Promise<T>((resolve, reject) => {
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => resolve(data))
+            .catch((error) => reject(error));
+    });
+}
+
+export class API {
+    readonly baseUrl: string;
+
+    constructor() {
+        this.baseUrl = '/api';
+    }
+
+    get readings() {
+        return {
+            serials: () =>
+                fetchJsonData<string[]>(`${this.baseUrl}/readings/serials`),
+            deviceIds: (serial: string) =>
+                fetchJsonData<string[]>(
+                    `${this.baseUrl}/readings/${serial}/devices`
+                ),
+            get: (serial: string, deviceIds: string[]) => {
+                const promises = deviceIds
+                    .filter((d) => d.length)
+                    .map((deviceId) =>
+                        fetchJsonData<Reading[]>(
+                            `${this.baseUrl}/readings/${serial}/${deviceId}`
+                        )
+                    );
+                return Promise.all(promises);
+            },
+        };
+    }
+}
