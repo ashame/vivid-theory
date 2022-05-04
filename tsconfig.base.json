@@ -20,6 +20,9 @@
       ],
       "@vivid-theory/database": [
         "libs/database/src/index.ts"
+      ],
+      "@vivid-theory/models": [
+        "libs/database/src/lib/models/index.ts"
       ]
     }
   },
