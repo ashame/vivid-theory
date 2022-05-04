@@ -1,16 +1,13 @@
-import * as express from 'express';
-import { Message } from '@vivid-theory/api-interfaces';
+import app from './app';
+import { Connection } from '@vivid-theory/database';
 
-const app = express();
+const db = new Connection();
+const PORT = process.env.PORT ?? 3333;
 
-const greeting: Message = { message: 'Welcome to api!' };
 
-app.get('/api', (req, res) => {
-  res.send(greeting);
+db.connect().then((err) => {
+    if (err) process.exit(1);
+    app.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+    });
 });
-
-const port = process.env.port || 3333;
-const server = app.listen(port, () => {
-  console.log('Listening at http://localhost:' + port + '/api');
-});
-server.on('error', console.error);
