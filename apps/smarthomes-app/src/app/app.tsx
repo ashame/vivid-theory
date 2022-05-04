@@ -1,28 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import { Message } from '@vivid-theory/api-interfaces';
+import { useEffect, useState } from 'react';
+import { ComboBox, Header } from '@vivid-theory/ui';
+import styled from 'styled-components';
+
+const FormStyle = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+`;
 
 export const App = () => {
-  const [m, setMessage] = useState<Message>({ message: '' });
+    const [serials, setSerials] = useState<string[]>([]);
+    const [selectedSerial, setSelectedSerial] = useState<string>('');
 
-  useEffect(() => {
-    fetch('/api')
-      .then((r) => r.json())
-      .then(setMessage);
-  }, []);
+    const [deviceIds, setDeviceIds] = useState<string[]>([]);
+    const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
 
-  return (
-    <>
-      <div style={{ textAlign: 'center' }}>
-        <h1>Welcome to smarthomes-app!</h1>
-        <img
-          width="450"
-          src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
-          alt="Nx - Smart, Fast and Extensible Build System"
-        />
-      </div>
-      <div>{m.message}</div>
-    </>
-  );
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setLoading(true);
+        fetch('/api/readings/serials')
+            .then((r) => r.json())
+            .then(setSerials)
+            .finally(() => setLoading(false));
+    }, []);
+
+    useEffect(() => {
+        if (selectedSerial.length) {
+            setLoading(true);
+            fetch(`/api/readings/${selectedSerial}/devices`)
+                .then((r) => r.json())
+                .then(setDeviceIds)
+                .finally(() => setLoading(false));
+        } else {
+            setDeviceIds([]);
+        }
+    }, [selectedSerial]);
+
+    return (
+        <div>
+            <Header title="Smart Home Data Visualizer" />
+            <FormStyle>
+                <ComboBox
+                    id={'serial-number'}
+                    values={serials}
+                    selected={selectedSerial}
+                    name="Serial Number"
+                    onChange={(e) => {
+                        setSelectedSerial(e.target.value);
+                        setSelectedDeviceId('');
+                    }}
+                />
+                <ComboBox
+                    id={'device-id'}
+                    values={deviceIds}
+                    selected={selectedDeviceId}
+                    name="Device ID"
+                    disabled={
+                        selectedSerial.length === 0 && deviceIds.length === 0
+                    }
+                    onChange={(e) => {
+                        setSelectedDeviceId(e.target.value);
+                    }}
+                />
+            </FormStyle>
+        </div>
+    );
 };
 
 export default App;

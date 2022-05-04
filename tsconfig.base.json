@@ -1,30 +1,39 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2017", "dom"],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@vivid-theory/api-interfaces": [
-        "libs/api-interfaces/src"
-      ],
-      "@vivid-theory/database": [
-        "libs/database/src"
-      ],
-      "@vivid-theory/models": [
-        "libs/database/src/lib/models"
-      ]
-    }
-  },
-  "exclude": ["node_modules", "tmp"]
+    "compileOnSave": false,
+    "compilerOptions": {
+        "rootDir": ".",
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "target": "es2015",
+        "module": "esnext",
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@vivid-theory/api-interfaces": [
+                "libs/api-interfaces/src"
+            ],
+            "@vivid-theory/database": [
+                "libs/database/src"
+            ],
+            "@vivid-theory/models": [
+                "libs/database/src/lib/models"
+            ],
+            "@vivid-theory/ui": [
+                "libs/ui-components/src/index.ts"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "tmp"
+    ]
 }

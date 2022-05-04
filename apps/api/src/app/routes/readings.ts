@@ -31,10 +31,10 @@ const deviceIds = (() => {
 })();
 
 const serials = (() => {
-    let cache = [];
-    setInterval(() => (cache = []), 1000 * 60);
+    const cache = new Set([]);
+    setInterval(() => cache.clear(), 1000 * 60);
     return async () => {
-        if (cache.length) return cache;
+        if (cache.size) return Array.from(cache);
         const { Sequelize } = readings.sequelize;
         const serials = await readings.findAll({
             attributes: [
@@ -45,9 +45,9 @@ const serials = (() => {
             ],
         });
         for (const serial of serials) {
-            cache.push(serial.Serial_Number);
+            cache.add(serial.Serial_Number);
         }
-        return cache;
+        return Array.from(cache);
     };
 })();
 
