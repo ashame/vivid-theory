@@ -19,10 +19,10 @@
         "libs/api-interfaces/src"
       ],
       "@vivid-theory/database": [
-        "dist/libs/database/src"
+        "libs/database/src"
       ],
       "@vivid-theory/models": [
-        "dist/libs/database/src/lib/models"
+        "libs/database/src/lib/models"
       ]
     }
   },

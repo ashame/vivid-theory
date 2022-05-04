@@ -1,26 +1,18 @@
 #!/bin/sh
-
-echo "Building production application"
-nx run-many --target=build --projects=smarthomes-app,database,api --prod --extractLicenses --generatePackageJson
+start=$SECONDS
+echo "Starting production build..."
+nx run-many --target=build --projects=smarthomes-app,database,api --prod --extractLicenses --generatePackageJson --parallel
 if [ $? -ne 0 ]; then
     echo "Build failed - aborting"
     exit 1
 fi
 
 echo "Running Tests"
-nx run-many --target=test --projects=smarthomes-app,database,api --prod
+nx run-many --target=test --projects=smarthomes-app,database,api
 if [ $? -ne 0 ]; then
     echo "Tests failed - aborting"
     exit 1
 fi
 
-if [ -z "${NX_SKIP_DEPLOY}" ]; then
-    echo "Automatic frontend deployment not yet supported - build artifacts are located in ./dist/apps/smarthomes-app"
-    export NODE_ENV=production
-    cd ./dist/apps/api
-    node -r dotenv/config main.js
-    if [ $? -ne 0 ]; then
-        echo "Failed to deploy to production"
-        exit 1
-    fi
-fi
+echo "Build finished in $(($SECONDS - $start))s"
+echo "Build artifacts can be found in the dist folder"
