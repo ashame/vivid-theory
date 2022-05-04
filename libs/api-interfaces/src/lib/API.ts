@@ -24,16 +24,10 @@ export class API {
                 fetchJsonData<string[]>(
                     `${this.baseUrl}/readings/${serial}/devices`
                 ),
-            get: (serial: string, deviceIds: string[]) => {
-                const promises = deviceIds
-                    .filter((d) => d.length)
-                    .map((deviceId) =>
-                        fetchJsonData<Reading[]>(
-                            `${this.baseUrl}/readings/${serial}/${deviceId}`
-                        )
-                    );
-                return Promise.all(promises);
-            },
+            get: (serial: string, deviceId: string) =>
+                fetchJsonData<Reading[]>(
+                    `${this.baseUrl}/readings/${serial}/${deviceId}`
+                ),
         };
     }
 }

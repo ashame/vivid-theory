@@ -2,10 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { Header } from '@vivid-theory/ui';
 import { Backdrop, CircularProgress, Container } from '@mui/material';
 import { ChartControls } from './components/ChartControls';
-import API from '@vivid-theory/api-interfaces';
+import API, { Reading } from '@vivid-theory/api-interfaces';
+
+interface Cache {
+    [key: string]: {
+        [key: string]: Reading[];
+    };
+}
 
 export const App = () => {
     const api = useMemo(() => new API(), []);
+    const [cache, setCache] = useState<Cache>({});
     const [serials, setSerials] = useState<string[]>([]);
     const [selectedSerial, setSelectedSerial] = useState<string>('');
 
@@ -37,17 +44,29 @@ export const App = () => {
     }, [selectedSerial, api]);
 
     useEffect(() => {
-        setLoading(true);
-        api.readings
-            .get(
-                selectedSerial,
-                selectedDeviceId.length ? [selectedDeviceId] : deviceIds
-            )
-            .then((res) => {
-                console.log({ res });
-            })
-            .finally(() => setLoading(false));
-    }, [selectedSerial, selectedDeviceId, api, deviceIds]);
+        if (!selectedSerial.length || !deviceIds.length) return;
+        if (!(selectedSerial in cache)) cache[selectedSerial] = {};
+        (async () => {
+            setLoading(true);
+            for (const deviceId of deviceIds) {
+                if (deviceId in cache[selectedSerial]) continue;
+                cache[selectedSerial][deviceId] = await api.readings.get(
+                    selectedSerial,
+                    deviceId
+                );
+            }
+            setCache(cache);
+            setLoading(false);
+        })();
+    }, [selectedSerial, deviceIds, cache, api]);
+
+    useEffect(() => {
+        if (!selectedDeviceId.length) return;
+        console.log('Cache updated.');
+        console.log({
+            [selectedDeviceId]: cache[selectedSerial][selectedDeviceId],
+        });
+    }, [selectedDeviceId, selectedSerial, cache]);
 
     return (
         <Container maxWidth="md">
