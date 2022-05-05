@@ -65,7 +65,8 @@ router.get('/:serial/devices', async (req, res) => {
 
 router.get('/:serial/:deviceId/:page?', async (req, res) => {
     const { serial, deviceId } = req.params;
-    const offset = Number(req.params.page || 0) * 100;
+    const amountPerPage = 30;
+    const offset = Number(req.params.page || 0) * amountPerPage;
     if (offset < 0)
         return res.status(400).json({ message: 'Invalid page number' });
     const result = await readings.findAll({
@@ -77,7 +78,7 @@ router.get('/:serial/:deviceId/:page?', async (req, res) => {
             Device_ID: deviceId,
         },
         order: [['DateTime', 'ASC']],
-        limit: 100,
+        limit: amountPerPage,
         offset,
     });
     res.json(result);

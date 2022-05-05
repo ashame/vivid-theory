@@ -9,7 +9,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import API, { Reading } from '@vivid-theory/api-interfaces';
 import React, { useEffect, useRef, useState } from 'react';
-import { ChartData, ChartDataset } from 'chart.js';
+import { ChartDataset } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { format } from 'date-fns';
 
@@ -37,6 +37,13 @@ export interface ChartPropTypes {
 }
 
 const api = new API();
+const getRandomColors = () => {
+    const r = Math.floor(Math.random() * 255);
+    const g = Math.floor(Math.random() * 255);
+    const b = Math.floor(Math.random() * 255);
+    const a = Math.random() * 0.5 + 0.5;
+    return [`rgb(${r}, ${g}, ${b})`, `rgba(${r}, ${g}, ${b}, ${a})`];
+};
 
 export function Chart(props: ChartPropTypes) {
     const { serial, deviceId, deviceIds, setLoading } = props;
@@ -51,17 +58,35 @@ export function Chart(props: ChartPropTypes) {
 
     useEffect(() => {
         if (!readingCache[serial]) return;
-        if (!deviceId) return;
-        setChartDatasets([
-            {
-                label: deviceId,
-                data: readingCache[serial]?.[deviceId]?.[page].map((r) => ({
-                    x: r.DateTime as any,
-                    y: r.Wattage as any,
+        const datasets: ChartDataset<'line'>[] = [];
+        for (const id of deviceId ? [deviceId] : deviceIds) {
+            const [borderColor, backgroundColor] = getRandomColors();
+            const dataset = {
+                label: id,
+                backgroundColor,
+                borderColor,
+                data: readingCache[serial][id]?.[page]?.map((r) => ({
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    x: r.DateTime as any, //this is a valid type for a time scaling chart
+                    y: Number(r.Wattage),
                 })),
-            },
-        ]);
-    }, [serial, deviceId, prevSerial, prevDeviceId, readingCache, page]);
+            };
+            datasets.push(dataset);
+        }
+        setChartDatasets(datasets);
+    }, [
+        serial,
+        deviceId,
+        prevSerial,
+        prevDeviceId,
+        readingCache,
+        page,
+        deviceIds,
+    ]);
+
+    useEffect(() => {
+        if (!serial.length) setChartDatasets([]);
+    }, [serial]);
 
     useEffect(() => {
         (async () => {
@@ -87,18 +112,18 @@ export function Chart(props: ChartPropTypes) {
                 })
             );
 
+            const cache = { ...readingCache };
             for (let i = 0; i < devices.length; i++) {
                 const deviceId = devices[i];
                 const deviceReadings = readings[i];
                 if (!deviceReadings || !deviceReadings?.length) continue;
-                if (!readingCache[serial]) readingCache[serial] = {};
-                if (!readingCache[serial][deviceId])
-                    readingCache[serial][deviceId] = {};
-                readingCache[serial][deviceId][page] = deviceReadings;
+                if (!cache[serial]) cache[serial] = {};
+                if (!cache[serial][deviceId]) cache[serial][deviceId] = {};
+                cache[serial][deviceId][page] = deviceReadings;
                 changed = true;
             }
 
-            if (changed) setReadingCache(readingCache);
+            if (changed) setReadingCache(cache);
             setLoading(false);
         })();
     }, [serial, deviceIds, readingCache, page, setLoading, prevDeviceIds]);
@@ -139,9 +164,6 @@ export function Chart(props: ChartPropTypes) {
                                     minute: 'HH:mm',
                                 },
                             },
-                            ticks: {
-                                source: 'data',
-                            },
                         },
                         yAxes: {
                             type: 'linear',
@@ -159,7 +181,7 @@ export function Chart(props: ChartPropTypes) {
                                         'yyyy-MM-dd HH:mm'
                                     ),
                                 label: (context: any) =>
-                                    ` ${context.dataset.label} - ${context.raw.y} watts consumption`,
+                                    `${context.dataset.label} - ${context.raw.y} watt consumption`,
                             },
                         },
                     },
