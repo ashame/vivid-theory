@@ -29,6 +29,9 @@
             ],
             "@vivid-theory/ui": [
                 "libs/ui-components/src/index.ts"
+            ],
+            "@vivid-theory/ui/functions": [
+                "libs/ui-components/src/lib/functions.ts"
             ]
         }
     },

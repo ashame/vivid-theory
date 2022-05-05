@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from '@vivid-theory/ui';
 import { Backdrop, CircularProgress, Container } from '@mui/material';
 import { Chart, ChartControls } from './components';
@@ -40,7 +40,7 @@ export const App = () => {
     }, [selectedSerial]);
 
     return (
-        <Container>
+        <Container maxWidth="xl">
             <Backdrop
                 sx={{ color: '#fff', zIndex: (t) => t.zIndex.drawer + 1 }}
                 open={loading}
@@ -64,6 +64,6 @@ export const App = () => {
             />
         </Container>
     );
-};;;
+};
 
 export default App;

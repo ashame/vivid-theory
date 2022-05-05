@@ -1,14 +1,7 @@
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import API, { Reading } from '@vivid-theory/api-interfaces';
-import React, { useEffect, useRef, useState } from 'react';
+import { usePrevious, getRandomColors } from '@vivid-theory/ui/functions';
+import React, { useEffect, useState } from 'react';
 import { ChartDataset } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { format } from 'date-fns';
@@ -21,29 +14,13 @@ interface ReadingCache {
     };
 }
 
-function usePrevious<T>(value: T): T | undefined {
-    const ref = useRef<T>();
-    useEffect(() => {
-        ref.current = value;
-    });
-    return ref.current;
-}
-
+const api = new API();
 export interface ChartPropTypes {
     serial: string;
     deviceId: string;
     deviceIds: string[];
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const api = new API();
-const getRandomColors = () => {
-    const r = Math.floor(Math.random() * 255);
-    const g = Math.floor(Math.random() * 255);
-    const b = Math.floor(Math.random() * 255);
-    const a = Math.random() * 0.5 + 0.5;
-    return [`rgb(${r}, ${g}, ${b})`, `rgba(${r}, ${g}, ${b}, ${a})`];
-};
 
 export function Chart(props: ChartPropTypes) {
     const { serial, deviceId, deviceIds, setLoading } = props;
@@ -130,24 +107,6 @@ export function Chart(props: ChartPropTypes) {
 
     return (
         <div>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>serial</TableCell>
-                            <TableCell>deviceId</TableCell>
-                            <TableCell>deviceIds</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>{props.serial}</TableCell>
-                            <TableCell>{props.deviceId}</TableCell>
-                            <TableCell>{props.deviceIds.join(', ')}</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
             <Line
                 data={{
                     labels: [],
