@@ -5,9 +5,9 @@ import { Chart, ChartControls } from './components';
 import API from '@vivid-theory/api-interfaces';
 import 'chart.js/auto';
 
-export const App = () => {
-    const api = useMemo(() => new API(), []);
+const api = new API();
 
+export const App = () => {
     const [serials, setSerials] = useState<string[]>([]);
     const [selectedSerial, setSelectedSerial] = useState('');
 
@@ -17,15 +17,13 @@ export const App = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!serials.length) {
-            setLoading(true);
-            api.readings
-                .serials()
-                .then(setSerials)
-                .catch(console.error)
-                .finally(() => setLoading(false));
-        }
-    }, [api, serials]);
+        setLoading(true);
+        api.readings
+            .serials()
+            .then(setSerials)
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, []);
 
     useEffect(() => {
         if (selectedSerial.length) {
@@ -36,9 +34,10 @@ export const App = () => {
                 .catch(console.error)
                 .finally(() => setLoading(false));
         } else {
+            setSelectedDeviceId('');
             setDeviceIds([]);
         }
-    }, [selectedSerial, api]);
+    }, [selectedSerial]);
 
     return (
         <Container>
