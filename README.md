@@ -1,8 +1,7 @@
 
-
 # VividTheory
 
-This project was generated using [Nx](https://nx.dev).
+This project was generated using [Nx](https://nx.dev). **A live demo is available [here](http://vt-assessment.herokuapp.com/)**
 
 <p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
 
@@ -47,9 +46,29 @@ Run `nx g @nrwl/react:lib my-lib` to generate a library.
 
 Libraries are shareable across libraries and applications. They can be imported from `@vivid-theory/mylib`.
 
+## Environment Variables
+
+The following enviornment variables are **required**:
+| key     | description                         | example             |
+|---------|-------------------------------------|---------------------|
+| DB_HOST | hostname or IP address of database  | database.domain.com |
+| DB_PORT | port of database                    | 5432                |
+| DB_USER | username of database user           | database_user       |
+| DB_PASS | password of database user           | password            |
+| DB_TYPE | type of database                    | postgres            |
+| DB_NAME | name/schema to access               | wattage             |
+
 ## Development server
 
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+- Run `npm run dev:smarthomes` to bring up both the API and React development server - these will be accessible from <http://localhost:3333/> and <http://localhost:4200/> respectively
+- The main code for the smarthomes application is located in `apps/smarthomes-app`
+- Reusable UI components are locatd in `libs/ui-components`
+  - Alternatively, `@vivid-theory/ui` for components, and `@vivid-theory/ui/functions` for reusable functions
+
+### To run the API server in isolation
+
+- Run `nx serve api` to bring up the API server - this will serve on <http://localhost:3333/> by default
+- The main code for the API is located
 
 ## Code scaffolding
 
@@ -57,7 +76,9 @@ Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new
 
 ## Build
 
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. For a production build, run `npm run build:production`.
+
+To deploy to heroku, simply commit and push the current branch as-is after configuring environment variables.
 
 ## Running unit tests
 
@@ -78,8 +99,6 @@ Run `nx graph` to see a diagram of the dependencies of your projects.
 ## Further help
 
 Visit the [Nx Documentation](https://nx.dev) to learn more.
-
-
 
 ## ☁ Nx Cloud
 
