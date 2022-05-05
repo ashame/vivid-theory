@@ -12,5 +12,5 @@ export interface Reading {
     Device_Make?: string;
     Device_Model?: string;
     Device_Location?: string;
-    Wattage: number;
+    Wattage: string;
 }
