@@ -1,2 +1,2 @@
-export * from './ChartContainer';
+export * from './Chart';
 export * from './ChartControls';

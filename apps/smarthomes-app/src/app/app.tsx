@@ -15,6 +15,7 @@ export const App = () => {
     const [selectedDeviceId, setSelectedDeviceId] = useState('');
 
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(0);
 
     useEffect(() => {
         setLoading(true);
@@ -55,12 +56,15 @@ export const App = () => {
                 setSelectedSerial={setSelectedSerial}
                 selectedDeviceId={selectedDeviceId}
                 setSelectedDeviceId={setSelectedDeviceId}
+                setPage={setPage}
             />
             <Chart
                 serial={selectedSerial}
                 deviceId={selectedDeviceId}
                 deviceIds={deviceIds}
                 setLoading={setLoading}
+                page={page}
+                setPage={setPage}
             />
         </Container>
     );

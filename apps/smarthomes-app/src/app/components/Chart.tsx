@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { ChartDataset } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { format } from 'date-fns';
+import { Button } from '@mui/material';
+import styled from 'styled-components';
 
 interface ReadingCache {
     [serial: string]: {
@@ -15,15 +17,21 @@ interface ReadingCache {
 }
 
 const api = new API();
+const ChartContainer = styled.div`
+    display: grid;
+    grid-template-columns: 50px auto 50px;
+`;
 export interface ChartPropTypes {
     serial: string;
     deviceId: string;
     deviceIds: string[];
+    page: number;
+    setPage: React.Dispatch<React.SetStateAction<number>>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function Chart(props: ChartPropTypes) {
-    const { serial, deviceId, deviceIds, setLoading } = props;
+    const { serial, deviceId, deviceIds, page, setPage, setLoading } = props;
     const prevSerial = usePrevious(serial);
     const prevDeviceId = usePrevious(deviceId);
     const prevDeviceIds = usePrevious(deviceIds);
@@ -31,7 +39,7 @@ export function Chart(props: ChartPropTypes) {
         []
     );
     const [readingCache, setReadingCache] = useState<ReadingCache>({});
-    const [page, setPage] = useState(0);
+    const prevPage = usePrevious(page);
 
     useEffect(() => {
         if (!readingCache[serial]) return;
@@ -67,10 +75,15 @@ export function Chart(props: ChartPropTypes) {
 
     useEffect(() => {
         (async () => {
-            if (readingCache[serial] || !deviceIds.length) return;
-            if (prevDeviceIds && deviceIds[0] === prevDeviceIds[0]) return;
+            if (!serial || !deviceIds.length) return;
+            if (
+                prevDeviceIds &&
+                deviceIds[0] === prevDeviceIds[0] &&
+                (prevPage == null || (prevPage != null && page === prevPage))
+            )
+                return;
             setLoading(true);
-            const devices = deviceIds;
+            const devices = deviceId ? [deviceId] : deviceIds;
             let changed = false;
             const readings = await Promise.all(
                 devices.map(async (id) => {
@@ -103,10 +116,27 @@ export function Chart(props: ChartPropTypes) {
             if (changed) setReadingCache(cache);
             setLoading(false);
         })();
-    }, [serial, deviceIds, readingCache, page, setLoading, prevDeviceIds]);
+    }, [
+        serial,
+        deviceIds,
+        readingCache,
+        page,
+        setLoading,
+        prevDeviceIds,
+        prevPage,
+        deviceId,
+    ]);
 
     return (
-        <div>
+        <ChartContainer>
+            <Button
+                variant="text"
+                style={{ maxHeight: '50px', alignSelf: 'center' }}
+                onClick={() => setPage(page - 1)}
+                disabled={page === 0}
+            >
+                &lt;
+            </Button>
             <Line
                 data={{
                     labels: [],
@@ -146,6 +176,13 @@ export function Chart(props: ChartPropTypes) {
                     },
                 }}
             />
-        </div>
+            <Button
+                variant="text"
+                style={{ maxHeight: '50px', alignSelf: 'center' }}
+                onClick={() => setPage(page + 1)}
+            >
+                &gt;
+            </Button>
+        </ChartContainer>
     );
 }

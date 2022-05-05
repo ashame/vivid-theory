@@ -13,6 +13,7 @@ export interface ChartControlProps {
 
     selectedDeviceId: string;
     setSelectedDeviceId: React.Dispatch<React.SetStateAction<string>>;
+    setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const FormStyle = styled.div`
@@ -25,6 +26,7 @@ export function ChartControls(props: ChartControlProps) {
     function onChange(newSerial: string, newDeviceId = '') {
         props.setSelectedDeviceId(newDeviceId);
         props.setSelectedSerial(newSerial);
+        props.setPage(0);
     }
 
     return (
