@@ -31,10 +31,10 @@ const deviceIds = (() => {
 })();
 
 const serials = (() => {
-    let cache = [];
-    setInterval(() => (cache = []), 1000 * 60);
+    const cache = new Set([]);
+    setInterval(() => cache.clear(), 1000 * 60);
     return async () => {
-        if (cache.length) return cache;
+        if (cache.size) return Array.from(cache);
         const { Sequelize } = readings.sequelize;
         const serials = await readings.findAll({
             attributes: [
@@ -45,9 +45,9 @@ const serials = (() => {
             ],
         });
         for (const serial of serials) {
-            cache.push(serial.Serial_Number);
+            cache.add(serial.Serial_Number);
         }
-        return cache;
+        return Array.from(cache);
     };
 })();
 
@@ -63,8 +63,12 @@ router.get('/:serial/devices', async (req, res) => {
     res.json(result);
 });
 
-router.get('/:serial/:deviceId', async (req, res) => {
+router.get('/:serial/:deviceId/:page?', async (req, res) => {
     const { serial, deviceId } = req.params;
+    const amountPerPage = 30;
+    const offset = Number(req.params.page || 0) * amountPerPage;
+    if (offset < 0)
+        return res.status(400).json({ message: 'Invalid page number' });
     const result = await readings.findAll({
         attributes: {
             exclude: ['createdAt', 'updatedAt', 'id'],
@@ -74,6 +78,8 @@ router.get('/:serial/:deviceId', async (req, res) => {
             Device_ID: deviceId,
         },
         order: [['DateTime', 'ASC']],
+        limit: amountPerPage,
+        offset,
     });
     res.json(result);
 });
